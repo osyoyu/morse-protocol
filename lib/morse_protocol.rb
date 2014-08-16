@@ -7,14 +7,12 @@
 #  4 -  7 : Header Size in octets (default: 4)
 #  8 - 23 : Total Size in octets
 # 24 - 31 : Header Checksum
-# 32 - 47 : Source Address (not implemented)
-# 48 - 63 : Destination Address (not implemented)
 
 require 'base32'
 require './speak.rb'
 
 class MorsePacket
-  MorseShortTime = 0.3
+  MorseShortTime = 1
   MorseTable = {
     "A" => [0, 1],
     "B" => [1, 0, 0, 0],
@@ -67,8 +65,6 @@ class MorsePacket
     @packet.push(sprintf("%04B", @header_size).split(//))
     @packet.push(sprintf("%016B", @total_size).split(//))
     @packet.push(sprintf("%08B", @checksum).split(//))
-    @packet.push(sprintf("%016B", @source_addr).split(//))
-    @packet.push(sprintf("%016B", @destination_addr).split(//))
 
     @packet.push(data.unpack("B*").first.split(//))
 
@@ -76,24 +72,23 @@ class MorsePacket
   end
 
   def speak
-    #Speaker[Phasor.new]
-    #sleep 0.1
-    #Speaker.synth.freq = 440
-    #Speaker.mute
+    Speaker[Phasor.new]
+    Speaker.synth.freq = 440
+    Speaker.mute
 
     p morse_array = Base32.encode(@binary).gsub("=", "").split(//)
     morse_array.each do |c|
       MorseTable[c].each do |m|
-        p m
-        #Speaker.unmute
-        #if m == 0 then sleep MorseShortTime end
-        #if m == 1 then sleep MorseShortTime * 3 end
-        #Speaker.mute
+        Speaker.unmute
+        if m == 0 then sleep MorseShortTime end
+        if m == 1 then sleep MorseShortTime * 3 end
+        Speaker.mute
+        sleep MorseShortTime
       end
-      #sleep MorseShortTime
+      sleep MorseShortTime * 2
     end
   end
 end
 
-pa = MorsePacket.new("これからはBase32の時代だ、甘えるな")
+pa = MorsePacket.new("Sample")
 pa.speak
