@@ -9,11 +9,12 @@
 # 24 - 31 : Header Checksum
 
 require 'base32'
-require './speak.rb'
+require_relative './speak.rb'
 
-class MorsePacket
-  MorseShortTime = 1
-  MorseTable = {
+module MorseProtocol
+  BeepTime = 1
+
+  Table = {
     "A" => [0, 1],
     "B" => [1, 0, 0, 0],
     "C" => [1, 0, 1, 0],
@@ -51,44 +52,4 @@ class MorsePacket
     "9" => [1, 1, 1, 1, 0],
     "0" => [1, 1, 1, 1, 1]
   }
-
-  def initialize(data)
-    @version = 1
-    @header_size = 4
-    @total_size = @header_size + data.bytesize
-    @checksum = 0
-    @source_addr = 0
-    @destination_addr = 0
-
-    @packet = Array.new
-    @packet.push(sprintf("%04B", @version).split(//))
-    @packet.push(sprintf("%04B", @header_size).split(//))
-    @packet.push(sprintf("%016B", @total_size).split(//))
-    @packet.push(sprintf("%08B", @checksum).split(//))
-
-    @packet.push(data.unpack("B*").first.split(//))
-
-    @binary = [@packet.flatten.join].pack("B*")
-  end
-
-  def speak
-    Speaker[Phasor.new]
-    Speaker.synth.freq = 440
-    Speaker.mute
-
-    p morse_array = Base32.encode(@binary).gsub("=", "").split(//)
-    morse_array.each do |c|
-      MorseTable[c].each do |m|
-        Speaker.unmute
-        if m == 0 then sleep MorseShortTime end
-        if m == 1 then sleep MorseShortTime * 3 end
-        Speaker.mute
-        sleep MorseShortTime
-      end
-      sleep MorseShortTime * 2
-    end
-  end
 end
-
-pa = MorsePacket.new("Sample")
-pa.speak
