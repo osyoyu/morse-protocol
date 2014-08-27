@@ -10,9 +10,9 @@ Requirements
 
 Try it!
 -------
-- *Recpient*: `ruby sample/listen.rb`
-- *Source*: `ruby lib/morse_protocol.rb`
+- *Source*: `ruby sample/send.rb`
+- *Recpient*: `ruby sample/recieve.rb`
 
 Demo
 ----
-[Sending "Hi"](https://www.youtube.com/watch?v=KLxDyx_ZFC0)
+[https://www.youtube.com/watch?v=KLxDyx_ZFC](https://www.youtube.com/watch?v=KLxDyx_ZFC0)
